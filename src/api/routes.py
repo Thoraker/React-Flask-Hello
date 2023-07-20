@@ -18,8 +18,9 @@ def handle_hello():
     return jsonify(response_body), 200
 
 
-@api.route('/register', methods=['POST', 'GET'])
+@api.route("/register", methods=["GET", "POST"])
 def handle_register():
+
     data = request.get_json()
     new_user = User(
         email=data["email"],
@@ -29,4 +30,24 @@ def handle_register():
 
     db.session.add(new_user)
     db.session.commit()
-    return jsonify({"response": "Registro exitoso", "user": new_user.serialize()})
+    response_body = {"response": "Registro exitoso",
+                     "user": new_user.serialize()}
+
+    return jsonify(response_body), 201
+
+
+@api.route("/login", methods=["GET", "POST"])
+def handle_login():
+    data = request.get_json()
+    response_body = {}
+    if not data["email"] or not data["password"]:
+        response_body = {"response": "No es posible validar sus datos", "isLoguedIn": False}
+        return jsonify(response_body), 400    
+    user = User.query.filter_by(email = data["email"]).first()
+    if (user.password == data["password"]):
+        response_body = {"response": "Logueo exitoso", "isLogedIn": True}
+        return jsonify(response_body), 200
+    else:
+        response_body = {"response": "Correo o contraseña inválidos", "isLoguedIn": False}
+        return jsonify(response_body), 401
+

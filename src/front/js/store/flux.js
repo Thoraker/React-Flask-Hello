@@ -1,51 +1,56 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			message: null,
-			demo: [
-				{
-					title: "FIRST",
-					background: "white",
-					initial: "white"
-				},
-				{
-					title: "SECOND",
-					background: "white",
-					initial: "white"
-				}
-			]
+			isLogedIn
+
 		},
 		actions: {
-			// Use getActions to call a function within a fuction
-			exampleFunction: () => {
-				getActions().changeColor(0, "green");
-			},
+			register: async (values) => {
+				const myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
 
-			getMessage: async () => {
-				try{
-					// fetching data from the backend
-					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
-					const data = await resp.json()
-					setStore({ message: data.message })
-					// don't forget to return something, that is how the async resolves
-					return data;
-				}catch(error){
-					console.log("Error loading message from backend", error)
-				}
-			},
-			changeColor: (index, color) => {
-				//get the store
-				const store = getStore();
-
-				//we have to loop the entire demo array to look for the respective index
-				//and change its color
-				const demo = store.demo.map((elm, i) => {
-					if (i === index) elm.background = color;
-					return elm;
+				const raw = JSON.stringify({
+					"email": values.email,
+					"password": values.password
 				});
 
-				//reset the global store
-				setStore({ demo: demo });
+				const requestOptions = {
+					method: 'POST',
+					headers: myHeaders,
+					body: raw,
+					redirect: 'follow'
+				};
+
+				fetch("http://localhost:3001/api/register", requestOptions)
+					.then(response => response.text())
+					.then(result => alert(result))
+					.catch(error => alert('error', error));
+			},
+			login: async (values) => {
+				const myHeaders = new Headers();
+				myHeaders.append("Content-Type", "application/json");
+
+				const raw = JSON.stringify({
+					"email": values.email,
+					"password": values.password
+				});
+
+				const requestOptions = {
+					method: 'POST',
+					headers: myHeaders,
+					body: raw,
+					redirect: 'follow'
+				};
+
+				fetch("http://localhost:3001/api/login", requestOptions)
+					.then(response => response.text())
+					.then(result => {
+						alert(result)
+						setStore({ isLogedIn: result.isLoguedIn })
+						console.log(getStore());
+					})
+					.catch(error => alert('error', error));
+
 			}
 		}
 	};
