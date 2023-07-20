@@ -16,3 +16,17 @@ def handle_hello():
     }
 
     return jsonify(response_body), 200
+
+
+@api.route('/register', methods=['POST', 'GET'])
+def handle_register():
+    data = request.get_json()
+    new_user = User(
+        email=data["email"],
+        password=data["password"],
+        is_active=True
+    )
+
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify({"response": "Registro exitoso", "user": new_user.serialize()})
