@@ -4,8 +4,11 @@ This module takes care of starting the API Server, Loading the DB and Adding the
 from flask import Flask, request, jsonify, url_for, Blueprint
 from api.models import db, User
 from api.utils import generate_sitemap, APIException
+from flask_cors import CORS
 
 api = Blueprint('api', __name__)
+
+CORS(api)
 
 
 @api.route('/hello', methods=['POST', 'GET'])
@@ -30,7 +33,7 @@ def handle_register():
 
     db.session.add(new_user)
     db.session.commit()
-    response_body = {"response": "Registro exitoso",
+    response_body = {"response": "Successful registration",
                      "user": new_user.serialize()}
 
     return jsonify(response_body), 201
@@ -39,15 +42,14 @@ def handle_register():
 @api.route("/login", methods=["GET", "POST"])
 def handle_login():
     data = request.get_json()
-    response_body = {}
     if not data["email"] or not data["password"]:
-        response_body = {"response": "No es posible validar sus datos", "isLoguedIn": False}
+        response_body = {"response": "Impossible to validate", "isLoggedIn": False}
         return jsonify(response_body), 400    
     user = User.query.filter_by(email = data["email"]).first()
     if (user.password == data["password"]):
-        response_body = {"response": "Logueo exitoso", "isLogedIn": True}
+        response_body = {"response": "Logged in correctly", "isLoggedIn": True}
         return jsonify(response_body), 200
     else:
-        response_body = {"response": "Correo o contraseña inválidos", "isLoguedIn": False}
+        response_body = {"response": "Invalid Email or Password ", "isLoggedIn": False}
         return jsonify(response_body), 401
 

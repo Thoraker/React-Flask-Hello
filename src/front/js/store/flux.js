@@ -1,10 +1,20 @@
 const getState = ({ getStore, getActions, setStore }) => {
 	return {
 		store: {
-			isLogedIn
-
+			isLoggedIn: false,
+			message: null,
 		},
 		actions: {
+			getMessage: async () => {
+				try {
+					const resp = await fetch(process.env.BACKEND_URL + "/api/hello")
+					const data = await resp.json()
+					setStore({ message: data.message })
+					return data;
+				} catch (error) {
+					console.log("Error loading message from backend", error)
+				}
+			},
 			register: async (values) => {
 				const myHeaders = new Headers();
 				myHeaders.append("Content-Type", "application/json");
@@ -22,7 +32,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 				};
 
 				fetch("http://localhost:3001/api/register", requestOptions)
-					.then(response => response.text())
+					.then(response => response.json())
 					.then(result => alert(result))
 					.catch(error => alert('error', error));
 			},
@@ -43,14 +53,16 @@ const getState = ({ getStore, getActions, setStore }) => {
 				};
 
 				fetch("http://localhost:3001/api/login", requestOptions)
-					.then(response => response.text())
+					.then(response => response.json())
 					.then(result => {
-						alert(result)
-						setStore({ isLogedIn: result.isLoguedIn })
-						console.log(getStore());
+						alert(result.response);
+						setStore({ isLoggedIn: result.isLoggedIn })
 					})
 					.catch(error => alert('error', error));
-
+			},
+			logout: () => {
+				setStore({ isLoggedIn: false })
+				alert("Loged out succesfully")
 			}
 		}
 	};
