@@ -31,7 +31,7 @@ export const Navbar = () => {
 							</ul>
 						</li>
 					</ul>
-					<span className={store.isLoggedIn ? "nav-link text-success" : "nav-link text-danger"}>{store.isLoggedIn ? "Logged" : "Not Logged"}</span>
+					<span className={store.token != null ? "nav-link text-success" : "nav-link text-danger"}>{store.token != null ? "Logged" : "Not Logged"}</span>
 				</div>
 			</div>
 		</nav >

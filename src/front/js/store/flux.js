@@ -33,7 +33,7 @@ const getState = ({ getStore, getActions, setStore }) => {
 
 				fetch("http://localhost:3001/api/register", requestOptions)
 					.then(response => response.json())
-					.then(result => alert(result))
+					.then(result => alert(result.response))
 					.catch(error => alert('error', error));
 			},
 			login: async (values) => {
@@ -56,13 +56,33 @@ const getState = ({ getStore, getActions, setStore }) => {
 					.then(response => response.json())
 					.then(result => {
 						alert(result.response);
-						setStore({ isLoggedIn: result.isLoggedIn })
+						setStore({ token: result.token })
 					})
 					.catch(error => alert('error', error));
 			},
 			logout: () => {
-				setStore({ isLoggedIn: false })
+				setStore({ token: null })
 				alert("Loged out succesfully")
+			},
+			getUserId: () => {
+				var myHeaders = new Headers();
+				myHeaders.append("Authorization", "Bearer " + getStore().token);
+				myHeaders.append("Content-Type", "application/json");
+
+				var raw = JSON.stringify({
+				});
+
+				var requestOptions = {
+					method: 'POST',
+					headers: myHeaders,
+					body: raw,
+					redirect: 'follow'
+				};
+
+				fetch("http://localhost:3001/api/private", requestOptions)
+					.then(response => response.json())
+					.then(result => alert('Your user id is: ' + result.sub))
+					.catch(error => console.log('error', error));
 			}
 		}
 	};
